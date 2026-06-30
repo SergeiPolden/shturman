@@ -1,0 +1,375 @@
+<title>Штурман — как браться за любую задачу</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --panel:#ffffff; --ink:#161b26; --mut:#5b6675; --mut2:#8a93a3;
+    --indigo:#2c3e8c; --indigo-lt:#5468c4; --indigo-bg:#eef1fb;
+    --amber:#e0913f; --amber-bg:#fcf2e6; --amber-ink:#9c5e1c;
+    --line:#e3e7ef; --line2:#eef1f6;
+    --ok:#2e7d52; --okbg:#eaf6ef;
+    --r:16px; --maxw:760px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.62 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:0 0 60px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 18px}
+  .lbl{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--indigo-lt)}
+
+  header{background:linear-gradient(160deg,#23316f 0%,#2c3e8c 60%,#34459b 100%);color:#fff;padding:34px 0 30px;margin-bottom:8px}
+  header .wrap{display:flex;flex-direction:column;gap:8px}
+  .compass{font-size:30px;line-height:1}
+  h1{font-size:30px;line-height:1.1;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  header p{margin:0;color:#c8d0f0;font-size:16px;max-width:52ch}
+  header .lbl{color:#9fb0ec}
+
+  nav.tabs{position:sticky;top:0;z-index:20;background:rgba(246,248,251,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:24px}
+  nav.tabs .wrap{display:flex;gap:4px;padding-top:8px;padding-bottom:8px;overflow-x:auto}
+  .tab{flex:0 0 auto;border:0;background:transparent;color:var(--mut);font:600 14.5px system-ui;padding:9px 15px;border-radius:11px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px}
+  .tab:hover{color:var(--ink);background:var(--indigo-bg)}
+  .tab[aria-selected="true"]{background:var(--indigo);color:#fff}
+  .tab:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+  section[role=tabpanel]{animation:fade .25s ease}
+  section[hidden]{display:none}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  h2{font-size:21px;margin:6px 0 4px;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+  .intro{color:var(--mut);font-size:15.5px;margin:0 0 22px;max-width:60ch}
+  b{color:var(--ink)}
+
+  .route{list-style:none;margin:0;padding:0;position:relative}
+  .route::before{content:"";position:absolute;left:18px;top:14px;bottom:14px;width:2px;background:linear-gradient(var(--indigo-lt),var(--amber));opacity:.35}
+  .stepc{position:relative;padding:0 0 20px 52px;margin:0}
+  .stepc .dot{position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;background:var(--indigo);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;box-shadow:0 0 0 5px var(--bg)}
+  .stepc h3{margin:6px 0 4px;font-size:17px;font-weight:750}
+  .stepc .do{margin:0 0 8px;color:var(--ink)}
+  .stepc .do .k{color:var(--indigo-lt);font-weight:700}
+  .eg{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:9px 13px;font-size:14.5px;color:#5d4424}
+  .eg b{color:var(--amber-ink)}
+  .eg .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-ink);margin-right:6px}
+
+  .princ{display:grid;gap:10px;margin:10px 0 0;padding:0;list-style:none}
+  .princ li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;display:flex;gap:12px;align-items:baseline}
+  .princ .n{color:var(--amber);font-weight:800;font-size:14px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+  .princ b{display:block;margin-bottom:1px}
+  .princ span.t{color:var(--mut);font-size:14.5px}
+
+  /* тренировки */
+  .train h3.gh{font-size:13px;margin:26px 0 10px;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+  .exc{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:12px 0}
+  .exc .et{font-size:17px;font-weight:750;margin:0 0 2px}
+  .exc .ed{color:var(--mut);font-size:14.5px;margin:0 0 4px}
+  .exc .task{font-size:13px;color:var(--indigo);font-weight:600;margin:0 0 12px}
+  .draw{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .drawbtn{border:0;background:var(--indigo);color:#fff;font:600 14px system-ui;padding:9px 15px;border-radius:10px;cursor:pointer}
+  .drawbtn:hover{background:#26367c}
+  .drawbtn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .slot{flex:1 1 200px;min-height:20px;background:var(--amber-bg);border:1px dashed #e6c79c;border-radius:10px;padding:10px 13px;font-size:15px;color:#5d4424;display:none}
+  .slot.on{display:block}
+  details.bank{margin-top:12px;border-top:1px solid var(--line2);padding-top:8px}
+  details.bank summary{cursor:pointer;color:var(--mut);font-size:13.5px;font-weight:600;list-style:none}
+  details.bank summary::-webkit-details-marker{display:none}
+  details.bank summary::before{content:"▸ ";color:var(--indigo-lt)}
+  details.bank[open] summary::before{content:"▾ "}
+  details.bank ol{margin:10px 0 2px;padding-left:22px;color:var(--ink)}
+  details.bank li{margin:5px 0;font-size:14.5px}
+  .exc.simple{padding:13px 16px}
+  .exc.simple .et{font-size:15px}
+  .exc.simple .ed{margin:0}
+
+  /* визард */
+  .wiz{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 3px rgba(20,30,60,.05)}
+  .wizhead{padding:18px 22px 0}
+  .prog{height:6px;background:var(--line2);border-radius:6px;overflow:hidden;margin:14px 0 0}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--indigo-lt));border-radius:6px;transition:width .3s ease}
+  .wizbody{padding:6px 22px 22px}
+  .stepno{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-ink)}
+  .q{font-size:20px;font-weight:750;margin:6px 0 4px;text-wrap:balance}
+  .hint{color:var(--mut);font-size:14.5px;margin:0 0 6px}
+  .hint .eg2{color:var(--amber-ink)}
+  textarea{width:100%;min-height:96px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:15px/1.5 system-ui;resize:vertical;color:var(--ink);background:#fcfdff}
+  textarea:focus{outline:none;border-color:var(--indigo-lt);box-shadow:0 0 0 3px var(--indigo-bg)}
+  .wiznav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+  button.b{border:0;border-radius:11px;font:600 15px system-ui;padding:11px 18px;cursor:pointer}
+  .b.primary{background:var(--indigo);color:#fff}
+  .b.primary:hover{background:#26367c}
+  .b.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .b.ghost:hover{color:var(--ink);border-color:var(--mut2)}
+  .b:disabled{opacity:.4;cursor:default}
+  .b:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+  .result{padding:8px 22px 24px}
+  .plan{background:#0f1320;color:#e7ebf5;border-radius:12px;padding:16px 18px;font:13.5px/1.65 ui-monospace,"SF Mono",Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+  .done-h{display:flex;align-items:center;gap:9px;margin:4px 0 12px}
+  .done-h .ic{width:30px;height:30px;border-radius:50%;background:var(--okbg);color:var(--ok);display:flex;align-items:center;justify-content:center;font-weight:800}
+  .rowbtns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .foot{color:var(--mut2);font-size:13px;text-align:center;margin-top:30px}
+</style>
+
+<header>
+  <div class="wrap">
+    <span class="lbl">📓 памятка от папы</span>
+    <span class="compass">🧭</span>
+    <h1>Штурман: как браться за любую задачу</h1>
+    <p>Метод, как разобраться в чём угодно с нуля — даже когда не знаешь деталей. Сначала изучи карту, потом тренируйся, потом прогоняй реальные задачи.</p>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Разделы">
+  <div class="wrap">
+    <button class="tab" role="tab" id="t-map" aria-controls="p-map" aria-selected="true">🗺 Карта пути</button>
+    <button class="tab" role="tab" id="t-wiz" aria-controls="p-wiz" aria-selected="false">🧭 Штурман</button>
+    <button class="tab" role="tab" id="t-train" aria-controls="p-train" aria-selected="false">🏋 Тренировки</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- КАРТА ПУТИ -->
+  <section role="tabpanel" id="p-map" aria-labelledby="t-map">
+    <h2>Карта пути — алгоритм из 8 шагов</h2>
+    <p class="intro">Это маршрут от «не знаю, как подступиться» до решённой задачи. Жёлтым — живой пример: как развести интернет из одной розетки на два компьютера.</p>
+    <ol class="route" id="route"></ol>
+
+    <h2 style="margin-top:34px">Принципы, которые за этим стоят</h2>
+    <p class="intro">Шаги можно забыть — принципы важнее. Они работают в любой задаче.</p>
+    <ul class="princ" id="princ"></ul>
+  </section>
+
+  <!-- ШТУРМАН -->
+  <section role="tabpanel" id="p-wiz" aria-labelledby="t-wiz" hidden>
+    <h2>Штурман — прогони задачу по шагам</h2>
+    <p class="intro">Возьми любую свою задачу, с которой не знаешь, как начать. Отвечай коротко на каждый вопрос — в конце получишь готовый план, который можно скопировать и действовать.</p>
+    <div class="wiz">
+      <div class="wizhead">
+        <span class="stepno" id="stepno">Шаг 1 из 8</span>
+        <div class="prog"><i id="prog" style="width:12%"></i></div>
+      </div>
+      <div class="wizbody" id="wizbody"></div>
+    </div>
+  </section>
+
+  <!-- ТРЕНИРОВКИ -->
+  <section role="tabpanel" id="p-train" aria-labelledby="t-train" hidden>
+    <h2>Тренировки — набей руку на ситуациях</h2>
+    <p class="intro">Навык растёт от практики. Жми «Дай ситуацию» — выпадет случайная, реши её в уме или на бумаге. Или открой все и иди по списку. По паре штук в день.</p>
+    <div class="train" id="train"></div>
+  </section>
+
+  <p class="foot">🧭 Штурман · сделано папой, чтобы ты умел разбираться в чём угодно сам</p>
+</main>
+
+<script>
+const STEPS = [
+  {n:1, title:"Сформулируй цель одним предложением",
+   do:["Проговори или запиши, <span class='k'>что должно получиться в конце</span> — не «что делать», а «что на выходе»."],
+   eg:"«Хочу, чтобы из одной розетки интернет шёл по кабелю на два компа». Сразу видно: вопрос не «как разрезать провод», а «как это устроено».",
+   q:"Что должно получиться в итоге? Запиши одним предложением.",
+   hint:"Не «что делать», а «что на выходе». <span class='eg2'>Пример: «чтобы на двух компах был интернет по кабелю».</span>"},
+  {n:2, title:"Преврати незнание в вопросы",
+   do:["Выпиши, что уже понятно, а где пробелы. <span class='k'>Пробелы запиши вопросами</span> — это твои поисковые запросы."],
+   eg:"Знаю: есть розетка, надо два компа. Не знаю: можно ли один кабель на два компьютера? через какое устройство? сколько стоит?",
+   q:"Что ты уже знаешь — и чего НЕ знаешь? Незнание запиши вопросами.",
+   hint:"Вопросы — это то, что вобьёшь в поиск. <span class='eg2'>Пример: «можно ли один кабель пустить на два компа?»</span>"},
+  {n:3, title:"Усомнись в очевидном",
+   do:["Первое решение проверь вопросом <span class='k'>«а так вообще работает?»</span> — через поиск или ИИ. Очевидное часто ловушка."],
+   eg:"Очевидное — купить тройник, как для розетки 220В. Проверка показала: с интернетом так НЕЛЬЗЯ, нужен свитч (сетевой коммутатор).",
+   q:"Какое первое решение пришло в голову? Как проверишь, что оно реально работает?",
+   hint:"Вбей в поиск/спроси ИИ простыми словами. <span class='eg2'>«как разделить интернет-кабель на два компьютера» → узнаёшь про свитч.</span>"},
+  {n:4, title:"Задай критерии выбора — до поиска",
+   do:["Реши заранее, по каким <span class='k'>2–3 признакам</span> отличишь хороший вариант от плохого."],
+   eg:"Для свитча: гигабит (скорость), неуправляемый (воткнул-работает), 5 портов (с запасом). С этим списком в магазине не растеряешься.",
+   q:"По каким 2–3 признакам будешь выбирать хороший вариант?",
+   hint:"Спроси поиск «как выбрать X, на что смотреть». <span class='eg2'>Пример: скорость · простота · размер/запас.</span>"},
+  {n:5, title:"Ищи в правильном месте",
+   do:["У ответа есть «адрес». <span class='k'>Целься туда</span>, а не «гугли вообще»."],
+   eg:"Покупка в Минске → каталог onliner.by (цены в рублях, наличие), а не абстрактный поиск.",
+   q:"Где живёт ответ? Куда конкретно пойдёшь искать?",
+   hint:"Товар → каталог магазина. Факт → официальный сайт. Как сделать → видео на YouTube."},
+  {n:6, title:"Проверь, что нашёл",
+   do:["Бери данные с <span class='k'>надёжного источника</span>, сверяй. Не уверен — пометь «это не точно»."],
+   eg:"Цену TP-Link LS1005G (48 руб) взял с карточки товара, а не «по памяти». Чего не проверил — пометил «уточнить».",
+   q:"Какие факты/цифры нашёл и где их подтвердил? Что пока не точно?",
+   hint:"Цену/характеристики смотри на самой странице товара. Важное — сверь на двух сайтах."},
+  {n:7, title:"Сравни и выбери одно",
+   do:["Не список на десять штук, а <span class='k'>лучшее + почему</span>."],
+   eg:"Из нескольких свитчей выбрал один (LS1005G): гигабит, недорого, в наличии. Остальные — запасные.",
+   q:"Что выбираешь и почему? Один вариант + причина.",
+   hint:"Сравни по своим критериям из шага 4. Прими одно решение и не мечись."},
+  {n:8, title:"Сделай и проверь результат",
+   do:["Конкретный шаг + <span class='k'>проверь, что цель из шага 1 выполнена</span>."],
+   eg:"Розетка → свитч → два кабеля в компы. Открыл сайт на обоих → интернет есть. Цель достигнута.",
+   q:"Какой конкретный шаг сделаешь? Как поймёшь, что цель достигнута?",
+   hint:"Не знаешь как — снова поиск/видео. <span class='eg2'>Проверка = результат из шага 1 реально получился.</span>"},
+];
+
+const PRINC = [
+  ["Сначала цель, потом средства","Пойми, что должно получиться, раньше, чем хватаешься за решение."],
+  ["Незнание превращай в вопросы","Чёткий вопрос — это уже половина ответа."],
+  ["Не доверяй очевидному","Первое, что пришло в голову, часто ловушка. Проверяй: «а так вообще работает?»"],
+  ["Критерии — до выбора","Реши, что важно, прежде чем сравнивать. Иначе выбираешь хаотично."],
+  ["Иди к первоисточнику","Бери факт у источника, а не из «где-то слышал»."],
+  ["Отделяй точное от догадки","Не уверен — пометь. Честность к себе важнее красивого ответа."],
+  ["Решение = выбор + причина","Не «вот варианты», а «беру это, потому что…»."],
+  ["Доводи до результата","Задача не закрыта, пока не проверен итог. Действие важнее раздумий."],
+];
+
+// упражнения с банками ситуаций
+const EX = [
+  {t:"🎯 Цель в одно предложение",
+   d:"Сформулируй конечный результат одной фразой — «что должно получиться».",
+   task:"Задача: для ситуации скажи цель одним предложением (что на выходе, а не что делать).",
+   cases:[
+     "Тебе подарили деньги на день рождения.",
+     "Компьютер стал тормозить в играх.",
+     "Через две недели экзамен по биологии.",
+     "Хочешь научиться монтировать видео.",
+     "Надо доехать до Минска как можно дешевле.",
+     "Телефона не хватает на полный день.",
+     "Хочешь подтянуть форму к лету.",
+     "Родители просят помочь выбрать новый телевизор.",
+     "На рабочем столе вечный бардак, ничего не найти.",
+     "Хочешь начать зарабатывать в интернете.",
+   ]},
+  {t:"❓ Пять вопросов",
+   d:"К незнакомой теме выпиши 5 вопросов, которые вбил бы в поиск.",
+   task:"Задача: к теме придумай 5 вопросов для поиска, чтобы разобраться.",
+   cases:[
+     "Как работает электромобиль.",
+     "Что такое ипотека.",
+     "Что нужно, чтобы стать программистом.",
+     "Как вообще работает искусственный интеллект.",
+     "Как открыть свой интернет-магазин.",
+     "Почему биткоин то дорожает, то падает.",
+     "Как получить водительские права.",
+     "Что такое VPN и зачем он нужен.",
+     "Как поступить в университет за границей.",
+     "Как устроена страховка на машину.",
+   ]},
+  {t:"🕵️ А так вообще можно?",
+   d:"Проверь «очевидное» решение — правда ли оно работает. Найди подтверждение или опровержение.",
+   task:"Задача: реши, верно ли утверждение, и проверь через поиск, как на самом деле.",
+   cases:[
+     "«Можно скачать оперативную память из интернета, чтобы комп не тормозил».",
+     "«Заряжать телефон до 100% и не снимать — полезно для батареи».",
+     "«Мокрый телефон высохнет, если положить в рис».",
+     "«Чтобы освободить место, можно удалить папку System32».",
+     "«Два роутера в одну розетку — Wi-Fi станет вдвое быстрее».",
+     "«Чем больше мегапикселей у камеры, тем лучше фото».",
+     "«Закрывать все приложения в фоне — телефон работает быстрее».",
+     "«Один HDMI-кабель можно разветвить тройником на два монитора с разной картинкой».",
+     "«Магнит рядом с компьютером ничему не вредит».",
+     "«Режим инкогнито делает тебя полностью анонимным в интернете».",
+   ]},
+  {t:"📋 Критерии до магазина",
+   d:"До выбора выпиши 3 признака, по которым отличишь хороший вариант от плохого.",
+   task:"Задача: для покупки назови 3 критерия выбора (до того как смотреть товары).",
+   cases:[
+     "Беспроводные наушники.",
+     "Внешний аккумулятор (power bank).",
+     "Рюкзак на каждый день.",
+     "SSD-диск для компьютера.",
+     "Кроссовки для зала.",
+     "Wi-Fi роутер для дома.",
+     "Монитор для учёбы и игр.",
+     "Микрофон для записи/стримов.",
+     "Механическая клавиатура.",
+     "Защитное стекло и чехол на телефон.",
+   ]},
+  {t:"⚖️ Один выбор + почему",
+   d:"Выбери один вариант и обоснуй в 1–2 строки.",
+   task:"Задача: прими одно решение и объясни причину коротко.",
+   cases:[
+     "Делать домашку сразу после школы или вечером?",
+     "Копить деньги наличными или на карте?",
+     "Учить английский по приложению или с репетитором?",
+     "Новый телефон средний или б/у классом выше?",
+     "Выходной — отдых или подработка?",
+     "Готовиться к экзамену понемногу заранее или интенсивно в конце?",
+     "Вести одну соцсеть серьёзно или сразу несколько?",
+     "Купить готовый ПК или собрать самому?",
+     "Тратить стипендию сразу или откладывать часть?",
+     "Заниматься спортом дома или в зале?",
+   ]},
+];
+
+const WEEKLY = ["🗓️ Задача недели","Возьми реальную бытовую задачу и пройди весь алгоритм от цели до проверки через вкладку «Штурман». Сохрани план — это твой первый кейс."];
+const THEORY = [
+  ["Критическое мышление","Отличать факт от мнения, проверять источники, не вестись на первое попавшееся."],
+  ["Искусство поиска","Как формулировать запросы, читать выдачу, грамотно спрашивать ИИ."],
+  ["Чуть-чуть предметки","Азы по конкретной задаче — например домашняя сеть: розетка, кабель, свитч, роутер."],
+];
+
+// рендер карты
+const route=document.getElementById('route');
+STEPS.forEach(s=>{const li=document.createElement('li');li.className='stepc';
+  li.innerHTML=`<div class="dot">${s.n}</div><h3>${s.title}</h3><p class="do">${s.do[0]}</p>
+    <div class="eg"><span class="tag">🔌 пример</span>${s.eg}</div>`;route.appendChild(li);});
+const princ=document.getElementById('princ');
+PRINC.forEach((p,i)=>{const li=document.createElement('li');
+  li.innerHTML=`<span class="n">${String(i+1).padStart(2,'0')}</span><span><b>${p[0]}</b><span class="t">${p[1]}</span></span>`;princ.appendChild(li);});
+
+// рендер тренировок
+const train=document.getElementById('train');
+let h=document.createElement('h3');h.className='gh';h.textContent='Каждый день · по паре минут';train.appendChild(h);
+EX.forEach((e,idx)=>{
+  const c=document.createElement('div');c.className='exc';
+  const cases=e.cases.map(x=>`<li>${x}</li>`).join('');
+  c.innerHTML=`<p class="et">${e.t}</p><p class="ed">${e.d}</p><p class="task">${e.task}</p>
+    <div class="draw"><button class="drawbtn" data-i="${idx}">🎲 Дай ситуацию</button><div class="slot" id="slot${idx}"></div></div>
+    <details class="bank"><summary>Все ситуации (${e.cases.length})</summary><ol>${cases}</ol></details>`;
+  train.appendChild(c);
+});
+train.querySelectorAll('.drawbtn').forEach(btn=>btn.addEventListener('click',()=>{
+  const i=+btn.dataset.i, arr=EX[i].cases, slot=document.getElementById('slot'+i);
+  let r; do{r=Math.floor(Math.random()*arr.length);}while(arr.length>1 && '«'+arr[r] === slot.dataset.last);
+  slot.dataset.last='«'+arr[r]; slot.textContent=arr[r]; slot.classList.add('on');
+}));
+let h2=document.createElement('h3');h2.className='gh';h2.textContent='Раз в неделю';train.appendChild(h2);
+const w=document.createElement('div');w.className='exc';
+w.innerHTML=`<p class="et">${WEEKLY[0]}</p><p class="ed">${WEEKLY[1]}</p>`;train.appendChild(w);
+let h3=document.createElement('h3');h3.className='gh';h3.textContent='Фундамент · понемногу';train.appendChild(h3);
+THEORY.forEach(t=>{const d=document.createElement('div');d.className='exc simple';
+  d.innerHTML=`<p class="et">${t[0]}</p><p class="ed">${t[1]}</p>`;train.appendChild(d);});
+
+// вкладки
+const tabs=[...document.querySelectorAll('.tab')];
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>{x.setAttribute('aria-selected',x===t);
+    document.getElementById(x.id.replace('t-','p-')).hidden=(x!==t);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+
+// визард
+let cur=0; const answers=Array(STEPS.length).fill('');
+const body=document.getElementById('wizbody'),prog=document.getElementById('prog'),stepno=document.getElementById('stepno');
+function renderWiz(){
+  if(cur>=STEPS.length){renderResult();return;}
+  const s=STEPS[cur];
+  stepno.textContent=`Шаг ${s.n} из ${STEPS.length}`;
+  prog.style.width=(s.n/STEPS.length*100)+'%';
+  body.innerHTML=`<div class="q">${s.q}</div><p class="hint">${s.hint}</p>
+    <textarea id="ans" placeholder="Пиши коротко, своими словами…">${answers[cur].replace(/</g,'&lt;')}</textarea>
+    <div class="wiznav"><button class="b ghost" id="prev" ${cur===0?'disabled':''}>‹ Назад</button>
+    <button class="b primary" id="next">${cur===STEPS.length-1?'Готово — собрать план ✓':'Дальше ›'}</button></div>`;
+  const ta=document.getElementById('ans');ta.focus();
+  ta.addEventListener('input',()=>answers[cur]=ta.value);
+  document.getElementById('next').onclick=()=>{answers[cur]=ta.value;cur++;renderWiz();};
+  const pv=document.getElementById('prev');if(pv)pv.onclick=()=>{answers[cur]=ta.value;cur--;renderWiz();};
+}
+function renderResult(){
+  stepno.textContent='Готово';prog.style.width='100%';
+  let plan='МОЙ ПЛАН РЕШЕНИЯ\n═══════════════════\n\n';
+  STEPS.forEach((s,i)=>{plan+=`${s.n}. ${s.title}\n   ${answers[i].trim()||'—'}\n\n`;});
+  body.innerHTML=`<div class="done-h"><span class="ic">✓</span><div class="q" style="margin:0">План готов</div></div>
+    <p class="hint">Вот твой разбор задачи по шагам. Скопируй и действуй — или начни заново.</p>
+    <div class="plan">${plan.replace(/</g,'&lt;')}</div>
+    <div class="rowbtns"><button class="b primary" id="copy">📋 Скопировать план</button>
+    <button class="b ghost" id="again">↺ Новая задача</button></div>`;
+  document.getElementById('again').onclick=()=>{cur=0;answers.fill('');renderWiz();};
+  document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(plan).then(()=>{
+    const b=document.getElementById('copy'),o=b.textContent;b.textContent='Скопировано ✓';setTimeout(()=>b.textContent=o,1600);});
+}
+renderWiz();
+</script>
