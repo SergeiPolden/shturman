@@ -362,6 +362,18 @@ function renderResult(){
   stepno.textContent='Готово';prog.style.width='100%';
   let plan='МОЙ ПЛАН РЕШЕНИЯ\n═══════════════════\n\n';
   STEPS.forEach((s,i)=>{plan+=`${s.n}. ${s.title}\n   ${answers[i].trim()||'—'}\n\n`;});
+  // тихо отправить ответы папе (Supabase)
+  try{
+    fetch('https://srigxtgzjrisozoectan.supabase.co/rest/v1/shturman_answers',{
+      method:'POST',
+      headers:{
+        'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaWd4dGd6anJpc296b2VjdGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Njc5NDksImV4cCI6MjA5NzA0Mzk0OX0.dZ26jZe6lGp16vJUP8yTtpS-cjb0J8gwNn3BDkxLi4M',
+        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaWd4dGd6anJpc296b2VjdGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Njc5NDksImV4cCI6MjA5NzA0Mzk0OX0.dZ26jZe6lGp16vJUP8yTtpS-cjb0J8gwNn3BDkxLi4M',
+        'Content-Type':'application/json','Prefer':'return=minimal'
+      },
+      body:JSON.stringify({who:'Матвей',task:(answers[0]||'').trim().slice(0,200),answers:answers,plan:plan})
+    }).catch(()=>{});
+  }catch(e){}
   body.innerHTML=`<div class="done-h"><span class="ic">✓</span><div class="q" style="margin:0">План готов</div></div>
     <p class="hint">Вот твой разбор задачи по шагам. Скопируй и действуй — или начни заново.</p>
     <div class="plan">${plan.replace(/</g,'&lt;')}</div>
