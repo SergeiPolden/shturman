@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Штурман·панель">
+<meta name="theme-color" content="#1c2230">
+<title>Штурман — ответы Матвея</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:#0f1420;color:#e8edf5;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+  h1{font-size:1.35rem;margin-bottom:4px}
+  .sub{color:#8a94a6;font-size:.9rem;margin-bottom:18px}
+  .gate{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+  .gate h2{font-size:1.2rem} input{font-size:16px;padding:13px;border-radius:11px;border:1px solid #2a3243;background:#161c28;color:#fff;width:240px;text-align:center}
+  button{font-size:16px;padding:12px 20px;border:none;border-radius:11px;background:#d2733e;color:#fff;font-weight:600;cursor:pointer}
+  .card{background:#161c28;border:1px solid #232c3d;border-radius:14px;padding:14px 16px;margin:12px 0}
+  .when{color:#8a94a6;font-size:.82rem;margin-bottom:8px}
+  .task{font-weight:700;margin-bottom:8px;color:#ffd9a8}
+  pre{white-space:pre-wrap;word-wrap:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.5;color:#cdd6e4;background:#0f1420;border-radius:10px;padding:11px 13px}
+  .empty{color:#8a94a6;text-align:center;padding:40px 0}
+  .err{color:#ff9a9a}
+  .refresh{background:#232c3d;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gate" id="gate">
+    <h2>🧭 Штурман — панель</h2>
+    <p class="sub">Ответы Матвея. Введите пароль.</p>
+    <input type="password" id="pw" placeholder="Пароль" autofocus>
+    <button id="enter">Войти</button>
+    <p class="err" id="gerr"></p>
+  </div>
+
+  <div id="app" hidden>
+    <h1>🧭 Штурман — заходы Матвея</h1>
+    <p class="sub" id="cnt">Загрузка…</p>
+    <button class="refresh" id="refresh">↺ Обновить</button>
+    <div id="list"></div>
+  </div>
+</div>
+<script>
+  var SB='https://srigxtgzjrisozoectan.supabase.co/rest/v1/shturman_answers?select=*&order=created_at.desc';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaWd4dGd6anJpc296b2VjdGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Njc5NDksImV4cCI6MjA5NzA0Mzk0OX0.dZ26jZe6lGp16vJUP8yTtpS-cjb0J8gwNn3BDkxLi4M';
+  var PASS='papa2027';
+
+  function fmt(s){ try{var d=new Date(s);return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return s;} }
+  function esc(s){return (s||'').replace(/</g,'&lt;');}
+
+  function load(){
+    var list=document.getElementById('list'), cnt=document.getElementById('cnt');
+    cnt.textContent='Загрузка…';
+    fetch(SB,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+      .then(function(r){return r.json();})
+      .then(function(rows){
+        if(!rows.length){list.innerHTML='<p class="empty">Пока пусто — Матвей ещё не сохранял разборы.</p>';cnt.textContent='0 заходов';return;}
+        cnt.textContent=rows.length+' заходов';
+        list.innerHTML=rows.map(function(x){
+          return '<div class="card"><div class="when">'+fmt(x.created_at)+' · '+esc(x.who)+'</div>'+
+            (x.task?'<div class="task">'+esc(x.task)+'</div>':'')+
+            '<pre>'+esc(x.plan||'')+'</pre></div>';
+        }).join('');
+      })
+      .catch(function(e){list.innerHTML='<p class="err">Ошибка загрузки: '+esc(String(e))+'</p>';cnt.textContent='';});
+  }
+
+  function enter(){
+    var pw=document.getElementById('pw').value;
+    if(pw===PASS){
+      try{localStorage.setItem('sh_ok','1');}catch(e){}
+      document.getElementById('gate').hidden=true;
+      document.getElementById('app').hidden=false;
+      load();
+    } else { document.getElementById('gerr').textContent='Неверный пароль'; }
+  }
+  document.getElementById('enter').onclick=enter;
+  document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')enter();});
+  document.getElementById('refresh').onclick=load;
+  try{ if(localStorage.getItem('sh_ok')==='1'){document.getElementById('gate').hidden=true;document.getElementById('app').hidden=false;load();} }catch(e){}
+</script>
+</body>
+</html>
